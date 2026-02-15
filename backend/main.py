@@ -7,16 +7,29 @@ import pandas as pd
 import joblib
 import uvicorn
 import os
-from insights import (
-    calculate_cost, 
-    calculate_co2_savings, 
-    get_peak_recommendation,
-    get_temperature_recommendation,
-    get_charger_type_info
-)
+try:
+    from backend.insights import (
+        calculate_cost, 
+        calculate_co2_savings, 
+        get_peak_recommendation,
+        get_temperature_recommendation,
+        get_charger_type_info
+    )
+except ImportError:
+    # Fallback if running directly inside backend/
+    from insights import (
+        calculate_cost, 
+        calculate_co2_savings, 
+        get_peak_recommendation,
+        get_temperature_recommendation,
+        get_charger_type_info
+    )
 
 # Import new routers
-from routers import forecasting, pricing, fleet, xai
+try:
+    from backend.routers import forecasting, pricing, fleet, xai
+except ImportError:
+    from routers import forecasting, pricing, fleet, xai
 
 app = FastAPI(title="EV Charging AI Platform 2026")
 

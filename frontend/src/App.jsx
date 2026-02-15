@@ -58,7 +58,8 @@ function App() {
     const loadingToast = toast.loading('Analyzing charging pattern...');
 
     try {
-      const response = await axios.post('http://127.0.0.1:8000/predict', formData);
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+      const response = await axios.post(`${apiUrl}/predict`, formData);
       const predictedValue = response.data.predicted_energy_consumed_kwh;
 
       setPrediction(predictedValue);
@@ -75,7 +76,8 @@ function App() {
       toast.success('Prediction completed!', { id: loadingToast });
     } catch (err) {
       console.error(err);
-      toast.error('Failed to get prediction. Ensure backend is running at http://127.0.0.1:8000', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+      toast.error(`Failed to get prediction. Ensure backend is running at ${apiUrl}`, {
         id: loadingToast,
         duration: 4000
       });

@@ -1,16 +1,23 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
 import { Zap, Activity, TrendingUp, Database } from 'lucide-react';
 
+import TabNav from './components/TabNav';
 import FormSection from './components/FormSection';
 import ResultsPanel from './components/ResultsPanel';
 import HistoryPanel from './components/HistoryPanel';
 import PredictionChart from './components/PredictionChart';
 import StatsCard from './components/StatsCard';
+import ForecastPage from './components/ForecastPage';
+import PricingPage from './components/PricingPage';
+import FleetPage from './components/FleetPage';
+import XAIPage from './components/XAIPage';
 
 function App() {
+  const [activeTab, setActiveTab] = useState('predict');
+
   const [formData, setFormData] = useState({
     battery_capacity: 75.0,
     charging_duration: 2.5,
@@ -103,6 +110,13 @@ function App() {
     energy: item.energy
   }));
 
+  // Page transition animation
+  const pageVariants = {
+    initial: { opacity: 0, y: 12 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -12 },
+  };
+
   return (
     <>
       <Toaster
@@ -133,101 +147,102 @@ function App() {
       <div className="container" style={{ maxWidth: '1400px' }}>
         {/* Hero Section */}
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-6"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="flex items-center justify-center gap-3 mb-3">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
             >
-              <Zap className="w-12 h-12 text-blue" />
+              <Zap className="w-10 h-10 text-blue" />
             </motion.div>
-            <h1 className="text-5xl md:text-6xl font-bold gradient-text">
-              EV Charging Forecaster
+            <h1 className="text-4xl md:text-5xl font-bold gradient-text">
+              EV Charging AI Platform
             </h1>
           </div>
-          <p className="text-lg text-muted max-w-2xl mx-auto">
-            Predict energy consumption with machine learning. Optimize your charging strategy, save costs, and reduce environmental impact.
+          <p className="text-sm text-muted max-w-2xl mx-auto">
+            Predict energy consumption • Forecast demand • Optimize pricing • Manage fleets • Explainable AI
           </p>
         </motion.div>
 
-        {/* Stats Overview */}
-        {totalPredictions > 0 && (
-          <div className="grid grid-3 gap-6 mb-8">
-            <StatsCard
-              title="Total Predictions"
-              value={totalPredictions}
-              icon={Database}
-              delay={0}
-            />
-            <StatsCard
-              title="Average Consumption"
-              value={avgConsumption.toFixed(1)}
-              unit="kWh"
-              icon={Activity}
-              delay={0.1}
-            />
-            <StatsCard
-              title="Latest Result"
-              value={history.length > 0 ? history[history.length - 1].energy.toFixed(1) : '0'}
-              unit="kWh"
-              icon={TrendingUp}
-              delay={0.2}
-            />
-          </div>
-        )}
+        {/* Tab Navigation */}
+        <TabNav activeTab={activeTab} onTabChange={setActiveTab} />
 
-        {/* Main Content Grid */}
-        <div className="grid lg:grid-cols-2 gap-8 mb-8">
-          {/* Left Column - Form */}
-          <div>
-            <FormSection
-              formData={formData}
-              onChange={handleChange}
-              onSubmit={handleSubmit}
-              loading={loading}
-            />
-          </div>
+        {/* Tab Content */}
+        <div className="mt-6">
+          <AnimatePresence mode="wait">
+            {activeTab === 'predict' && (
+              <motion.div key="predict" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.25 }}>
+                {/* Stats Overview */}
+                {totalPredictions > 0 && (
+                  <div className="grid grid-3 gap-6 mb-8">
+                    <StatsCard title="Total Predictions" value={totalPredictions} icon={Database} delay={0} />
+                    <StatsCard title="Average Consumption" value={avgConsumption.toFixed(1)} unit="kWh" icon={Activity} delay={0.1} />
+                    <StatsCard title="Latest Result" value={history.length > 0 ? history[history.length - 1].energy.toFixed(1) : '0'} unit="kWh" icon={TrendingUp} delay={0.2} />
+                  </div>
+                )}
 
-          {/* Right Column - Results */}
-          <div className="flex flex-col gap-8">
-            {prediction && (
-              <ResultsPanel prediction={prediction} formData={formData} />
-            )}
+                {/* Main Content Grid */}
+                <div className="grid lg:grid-cols-2 gap-8 mb-8">
+                  <div>
+                    <FormSection formData={formData} onChange={handleChange} onSubmit={handleSubmit} loading={loading} />
+                  </div>
+                  <div className="flex flex-col gap-8">
+                    {prediction && (
+                      <ResultsPanel prediction={prediction} formData={formData} />
+                    )}
+                    {!prediction && totalPredictions === 0 && (
+                      <motion.div className="glass-card-static p-12 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
+                        <Zap className="w-16 h-16 text-blue mx-auto mb-4 opacity-50" />
+                        <h3 className="text-xl font-semibold text-white mb-2">Ready to Predict</h3>
+                        <p className="text-muted">Fill in the charging parameters and click predict to see your energy consumption forecast.</p>
+                      </motion.div>
+                    )}
+                  </div>
+                </div>
 
-            {!prediction && totalPredictions === 0 && (
-              <motion.div
-                className="glass-card-static p-12 text-center"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <Zap className="w-16 h-16 text-blue mx-auto mb-4 opacity-50" />
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  Ready to Predict
-                </h3>
-                <p className="text-muted">
-                  Fill in the charging parameters and click predict to see your energy consumption forecast.
-                </p>
+                {/* Chart */}
+                {chartData.length > 0 && (
+                  <div className="mb-8">
+                    <PredictionChart data={chartData} type="area" />
+                  </div>
+                )}
+
+                {/* History */}
+                {history.length > 0 && (
+                  <HistoryPanel history={history} onClear={handleClearHistory} />
+                )}
               </motion.div>
             )}
-          </div>
+
+            {activeTab === 'forecast' && (
+              <motion.div key="forecast" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.25 }}>
+                <ForecastPage />
+              </motion.div>
+            )}
+
+            {activeTab === 'pricing' && (
+              <motion.div key="pricing" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.25 }}>
+                <PricingPage />
+              </motion.div>
+            )}
+
+            {activeTab === 'fleet' && (
+              <motion.div key="fleet" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.25 }}>
+                <FleetPage />
+              </motion.div>
+            )}
+
+            {activeTab === 'xai' && (
+              <motion.div key="xai" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.25 }}>
+                <XAIPage formData={formData} />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-
-        {/* Chart Section */}
-        {chartData.length > 0 && (
-          <div className="mb-8">
-            <PredictionChart data={chartData} type="area" />
-          </div>
-        )}
-
-        {/* History Section */}
-        {history.length > 0 && (
-          <HistoryPanel history={history} onClear={handleClearHistory} />
-        )}
 
         {/* Footer */}
         <motion.footer
@@ -237,7 +252,7 @@ function App() {
           transition={{ delay: 1 }}
         >
           <p className="text-sm text-muted">
-            Powered by Machine Learning • RandomForest Regression Model
+            Powered by Machine Learning • RandomForest | SHAP | TOU Pricing | Fleet EDF
           </p>
         </motion.footer>
       </div>

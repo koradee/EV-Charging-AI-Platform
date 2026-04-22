@@ -12,10 +12,10 @@ def calculate_co2_savings(distance_driven_km, energy_kwh):
     Calculate CO2 savings compared to gasoline vehicle.
     
     Assumptions:
-    - Gasoline car emits ~2.3 kg CO2 per km
-    - Grid electricity emits ~0.411 kg CO2 per kWh
+    - Gasoline car emits ~0.21 kg CO2 per km (EPA average: 404g CO2/mile)
+    - Grid electricity emits ~0.411 kg CO2 per kWh (US grid average)
     """
-    gas_car_emissions = distance_driven_km * 2.3
+    gas_car_emissions = distance_driven_km * 0.21
     ev_emissions = energy_kwh * 0.411
     return gas_car_emissions - ev_emissions
 

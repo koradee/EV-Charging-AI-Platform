@@ -1,7 +1,9 @@
 /* ============================================
-   EV Charging Forecaster - Design System
+   EV Charging AI Platform - Design System
    4-Color Dark Theme Premium UI
    ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   /* === 4-Color Palette === */
@@ -605,4 +607,98 @@ button {
 
 .rounded-xl {
   border-radius: var(--radius-xl);
+}
+
+/* ============================================
+   Tab Navigation
+   ============================================ */
+
+.tab-nav {
+  padding: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.tab-nav-inner {
+  display: flex;
+  gap: var(--space-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab-nav-inner::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all var(--transition-base);
+  border: none;
+  cursor: pointer;
+}
+
+.tab-btn:hover {
+  color: var(--color-text-white);
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.tab-btn-active {
+  color: var(--color-text-white);
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.tab-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-accent-blue), var(--color-accent-green));
+  border-radius: 2px;
+}
+
+/* ============================================
+   Spin animation
+   ============================================ */
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ============================================
+   Responsive Tab Nav
+   ============================================ */
+
+@media (max-width: 768px) {
+  .tab-nav-inner {
+    gap: 0;
+  }
+
+  .tab-btn {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-xs);
+  }
+
+  .tab-btn span:last-child {
+    display: none;
+  }
+}
+
+/* ============================================
+   Additional lg:grid-cols-2 helper
+   ============================================ */
+
+@media (min-width: 1024px) {
+  .lg\:grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }

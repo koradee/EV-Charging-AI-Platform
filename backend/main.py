@@ -34,9 +34,15 @@ except ImportError:
 app = FastAPI(title="EV Charging AI Platform 2026")
 
 # Add CORS Middleware
+# CORS: Restrict to known frontend origins
+allowed_origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://ev-charging-ai-platform.onrender.com",
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for simplicity in development
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -54,14 +60,14 @@ try:
     # If running from backend directory directly, files are in current dir
     # If running from root, files are in backend/
     
-    # Check if model.pkl exists in current dir
+    # Check if model.pkl exists in current dir (running from backend/)
     if os.path.exists(os.path.join(current_dir, 'model.pkl')):
         model_path = os.path.join(current_dir, 'model.pkl')
         encoder_path = os.path.join(current_dir, 'encoder.pkl')
     else:
-        # Fallback/Default assumption
-        model_path = os.path.join(current_dir, 'model.pkl')
-        encoder_path = os.path.join(current_dir, 'encoder.pkl')
+        # Fallback: running from project root
+        model_path = os.path.join(current_dir, '..', 'backend', 'model.pkl')
+        encoder_path = os.path.join(current_dir, '..', 'backend', 'encoder.pkl')
         
     model = joblib.load(model_path)
     le = joblib.load(encoder_path)
@@ -224,6 +230,16 @@ def get_recommendations(request: PredictionRequest):
             "Precondition your cabin while plugged in to save battery",
             "Regular software updates can improve charging efficiency"
         ]
+    }
+
+@app.get("/health")
+def health_check():
+    """Health check for monitoring and Docker/load-balancer probes."""
+    return {
+        "status": "healthy",
+        "model_loaded": model is not None,
+        "encoder_loaded": le is not None,
+        "api_version": "3.0"
     }
 
 if __name__ == "__main__":

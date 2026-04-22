@@ -48,8 +48,8 @@ export default function ResultsPanel({ prediction, formData }) {
     const costPerKwh = 0.13; // Average US electricity cost
     const estimatedCost = prediction * costPerKwh;
 
-    // CO2 savings vs gasoline (0.411 kg CO2/kWh grid vs ~2.3 kg CO2/km for gas car)
-    const co2Saved = (formData.distance_driven * 2.3) - (prediction * 0.411);
+    // CO2 savings vs gasoline (0.411 kg CO2/kWh grid vs ~0.21 kg CO2/km for gas car - EPA avg)
+    const co2Saved = (formData.distance_driven * 0.21) - (prediction * 0.411);
 
     // Charging time estimation
     const estimatedTime = prediction / formData.charging_rate;

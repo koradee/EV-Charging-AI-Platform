@@ -27,9 +27,9 @@ except ImportError:
 
 # Import new routers
 try:
-    from backend.routers import forecasting, pricing, fleet, xai
+    from backend.routers import forecasting, pricing, fleet, xai, analytics
 except ImportError:
-    from routers import forecasting, pricing, fleet, xai
+    from routers import forecasting, pricing, fleet, xai, analytics
 
 app = FastAPI(title="EV Charging AI Platform 2026")
 
@@ -53,6 +53,7 @@ app.include_router(forecasting.forecasting_router)
 app.include_router(pricing.pricing_router)
 app.include_router(fleet.fleet_router)
 app.include_router(xai.xai_router)
+app.include_router(analytics.analytics_router)
 
 # Load model and encoder
 try:
@@ -106,12 +107,15 @@ def read_root():
             "Demand Forecasting (Time-Series Aggregation)",
             "Dynamic Pricing (TOU Optimization)",
             "Explainable AI (SHAP)",
-            "Fleet Optimization (EDF Strategy)"
+            "Fleet Optimization (EDF Strategy)",
+            "Network Analytics, Session Cost & Driver Profiling"
         ],
         "endpoints": [
             "/predict", "/batch-predict", 
             "/forecast/hourly", "/pricing/optimize", 
-            "/fleet/optimize", "/xai/explain"
+            "/fleet/optimize", "/xai/explain",
+            "/analytics/metadata", "/analytics/overview",
+            "/analytics/predict-cost", "/analytics/predict-driver"
         ]
     }
 

@@ -1,3 +1,5 @@
+> Legacy platform reference. For the combined application, use [README.md](README.md) and [docs/INTEGRATION.md](docs/INTEGRATION.md), including Python 3.12 and the pinned dependencies.
+
 # Deployment Guide: EV Charging AI Platform
 
 This guide covers how to deploy the application using Docker (recommended for portability) and Cloud Hosting (Render/Railway).

@@ -1,5 +1,8 @@
 # Use official lightweight Python image
-FROM python:3.9-slim
+FROM python:3.12-slim
+
+# XGBoost requires the OpenMP runtime on slim images.
+RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 && rm -rf /var/lib/apt/lists/*
 
 # Set working directory inside container
 WORKDIR /app

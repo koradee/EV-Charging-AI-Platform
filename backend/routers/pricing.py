@@ -1,7 +1,10 @@
 
 from fastapi import APIRouter
 from pydantic import BaseModel
-from services.pricing_service import PricingService
+try:
+    from backend.services.pricing_service import PricingService
+except ModuleNotFoundError:
+    from services.pricing_service import PricingService
 
 pricing_router = APIRouter(tags=["Dynamic Pricing"])
 pricing_service = PricingService()

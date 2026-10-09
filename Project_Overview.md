@@ -1,3 +1,5 @@
+> Legacy platform reference. For the combined application, use [README.md](README.md) and [docs/INTEGRATION.md](docs/INTEGRATION.md), including Python 3.12 and the pinned dependencies.
+
 
 # EV Charging AI Platform
 

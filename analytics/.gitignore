@@ -1,0 +1,27 @@
+# Virtual Environments
+venv/
+env/
+.venv/
+
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter
+.ipynb_checkpoints
+
+# IDEs
+.vscode/
+.idea/
+
+# Large files / specific data
+# Uncomment below if you want to exclude all CSVs, though we keep processed ones for the portfolio
+# *.csv
+
+# macOS/OSX
+.DS_Store
+
+# Other virtual environments
+.venv/

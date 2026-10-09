@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
-import { Zap, BarChart3, DollarSign, Truck, Brain } from 'lucide-react';
+import { Zap, BarChart3, DollarSign, Truck, Brain, Database } from 'lucide-react';
 
 const tabs = [
     { id: 'predict', label: 'Predict', icon: Zap },
+    { id: 'analytics', label: 'Analytics', icon: Database },
     { id: 'forecast', label: 'Forecast', icon: BarChart3 },
     { id: 'pricing', label: 'Pricing', icon: DollarSign },
     { id: 'fleet', label: 'Fleet', icon: Truck },

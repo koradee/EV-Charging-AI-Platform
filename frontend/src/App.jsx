@@ -14,6 +14,7 @@ import ForecastPage from './components/ForecastPage';
 import PricingPage from './components/PricingPage';
 import FleetPage from './components/FleetPage';
 import XAIPage from './components/XAIPage';
+import AnalyticsPage from './components/AnalyticsPage';
 
 function App() {
   const [activeTab, setActiveTab] = useState('predict');
@@ -164,7 +165,7 @@ function App() {
             </h1>
           </div>
           <p className="text-sm text-muted max-w-2xl mx-auto">
-            Predict energy consumption • Forecast demand • Optimize pricing • Manage fleets • Explainable AI
+            Predict energy • Explore network analytics • Optimize pricing • Manage fleets • Explainable AI
           </p>
         </motion.div>
 
@@ -215,6 +216,12 @@ function App() {
                 {history.length > 0 && (
                   <HistoryPanel history={history} onClear={handleClearHistory} />
                 )}
+              </motion.div>
+            )}
+
+            {activeTab === 'analytics' && (
+              <motion.div key="analytics" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={{ duration: 0.25 }}>
+                <AnalyticsPage />
               </motion.div>
             )}
 

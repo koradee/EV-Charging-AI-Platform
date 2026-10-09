@@ -1,6 +1,9 @@
 
 from fastapi import APIRouter
-from services.demand_service import DemandService
+try:
+    from backend.services.demand_service import DemandService
+except ModuleNotFoundError:
+    from services.demand_service import DemandService
 
 # Initialize once (loads CSV)
 demand_service = DemandService() 

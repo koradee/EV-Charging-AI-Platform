@@ -1,7 +1,10 @@
 
 from fastapi import APIRouter
 from pydantic import BaseModel
-from services.xai_service import XAIService
+try:
+    from backend.services.xai_service import XAIService
+except ModuleNotFoundError:
+    from services.xai_service import XAIService
 import pandas as pd # Needed for DF conversion in service
 
 xai_router = APIRouter(tags=["Explainable AI"])

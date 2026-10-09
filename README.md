@@ -15,6 +15,10 @@ Explore network usage, estimate energy and session cost, classify driver profile
 | Fleet | Existing experimental fleet scheduling demonstration |
 | Explainability | SHAP explanations for the energy model |
 
+## Deploy on Vercel
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) to deploy the dashboard and Python API together. Import the **repository root** with the FastAPI preset and enable Large Functions; importing only `frontend/` does not deploy the ML models.
+
 ## Run locally
 
 Use **Python 3.12** and **Node.js 22.12+**.
@@ -102,10 +106,11 @@ All original routes remain available. See `/docs` for full request schemas.
 
 ```bash
 pip install -r requirements-dev.txt
-python -m pytest tests -q
 cd frontend
-npm run build
+VITE_API_URL=/api npm run build
 npx eslint src/components/AnalyticsPage.jsx
+cd ..
+python -m pytest tests -q
 ```
 
 The tests cover imported model inference, notebook feature parity, filtered aggregation, invalid inputs, missing model handling, and existing energy/demand/pricing/fleet/SHAP routes.

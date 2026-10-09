@@ -37,7 +37,7 @@ The energy model was serialized using scikit-learn 1.7.2, and the imported XGBoo
 
 ## Validation and known boundaries
 
-Run `python -m pytest tests -q`: checks request rejection, empty filters, notebook feature parity across charger/weekend/cleaned-SoC cases, actual saved model predictions, missing model errors, and all existing feature routes. The prediction checks compare adapter outputs to the original processed dataset row supplied directly to each saved model. They verify wiring, not predictive quality.
+Build the frontend first (`cd frontend && VITE_API_URL=/api npm run build`), then from the repository root run `python -m pytest tests -q`: checks request rejection, empty filters, notebook feature parity across charger/weekend/cleaned-SoC cases, actual saved model predictions, missing model errors, and all existing feature routes. The prediction checks compare adapter outputs to the original processed dataset row supplied directly to each saved model. They verify wiring, not predictive quality.
 
 Frontend: `npm run build` and `npx eslint src/components/AnalyticsPage.jsx`.
 

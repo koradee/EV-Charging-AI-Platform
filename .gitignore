@@ -30,3 +30,6 @@ npm-debug.log*
 # Models (Optional - keep if you want to version them, ignore if too large)
 # backend/model.pkl
 # backend/encoder.pkl
+
+# Vercel local project linkage
+.vercel/

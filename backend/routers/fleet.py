@@ -1,66 +1,67 @@
-
-from fastapi import APIRouter
-from pydantic import BaseModel
+"""Demonstration fleet scheduler with an hourly shared grid-capacity limit."""
+from math import ceil
 from typing import List
 
+from fastapi import APIRouter
+from pydantic import BaseModel, Field, model_validator
+
+
+CHARGER_POWER_KW = 7.2
+
+
 class FleetVehicle(BaseModel):
-    id: str
-    arrival_hour: int
-    departure_hour: int
-    energy_needed_kwh: float
+    id: str = Field(min_length=1)
+    arrival_hour: int = Field(ge=0, le=23)
+    departure_hour: int = Field(ge=1, le=24)
+    energy_needed_kwh: float = Field(gt=0)
+
+    @model_validator(mode="after")
+    def valid_window(self):
+        if self.departure_hour <= self.arrival_hour:
+            raise ValueError("departure_hour must be after arrival_hour (same day)")
+        return self
+
 
 class FleetRequest(BaseModel):
     vehicles: List[FleetVehicle]
-    max_grid_capacity: float = 100.0
+    max_grid_capacity: float = Field(default=100.0, gt=0, allow_inf_nan=False)
+
 
 fleet_router = APIRouter(tags=["Fleet Optimization"])
 
+
 @fleet_router.post("/fleet/optimize")
 def optimize_fleet(request: FleetRequest):
-    """
-    Simulate optimal charging schedule for multiple vehicles.
-    Simple greedy strategy prioritizing earliest departure.
+    """Earliest-departure-first, first feasible contiguous hourly charging slot.
+
+    Assumes one 7.2 kW charger per vehicle and whole-hour reservations.
+    Each reserved hour is conservatively counted at the full charger power,
+    even if the final hour uses less energy. No overnight sessions.
     """
     schedule = []
-    # Simple sort by departure time (earliest first)
-    sorted_vehicles = sorted(request.vehicles, key=lambda v: v.departure_hour)
-    
-    current_grid_load = {h: 0.0 for h in range(24)}
-    
-    for vehicle in sorted_vehicles:
-        assigned = False
-        duration_needed = int(vehicle.energy_needed_kwh / 7.2) # Assume 7.2kW L2 charger
-        if duration_needed < 1: duration_needed = 1
-        
-        # Try to find a window
-        # Strategy: Search backwards from departure to find latest possible start 
-        # (Just-in-Time charging is grid friendly if not peak)
-        
-        best_start = vehicle.arrival_hour
-        
-        # Simple Logic: Start immediately if possible
-        # Real logic would check capacity
-        start = vehicle.arrival_hour
-        if start + duration_needed > vehicle.departure_hour:
-             # Impossible schedule
-             status = "Impossible"
-             real_start = -1
-        else:
-             status = "Scheduled"
-             real_start = start
-             # Update grid load
-             for h in range(real_start, real_start + duration_needed):
-                 if h < 24: current_grid_load[h] += 7.2
-        
+    current_grid_load = {hour: 0.0 for hour in range(24)}
+
+    for vehicle in sorted(request.vehicles, key=lambda v: v.departure_hour):
+        duration = ceil(vehicle.energy_needed_kwh / CHARGER_POWER_KW)
+        assigned_start = -1
+
+        for start in range(vehicle.arrival_hour, vehicle.departure_hour - duration + 1):
+            hours = range(start, start + duration)
+            if all(current_grid_load[h] + CHARGER_POWER_KW <= request.max_grid_capacity + 1e-9 for h in hours):
+                assigned_start = start
+                for h in hours:
+                    current_grid_load[h] += CHARGER_POWER_KW
+                break
+
         schedule.append({
             "vehicle_id": vehicle.id,
-            "status": status,
-            "assigned_start_hour": real_start,
-            "duration": duration_needed
+            "status": "Scheduled" if assigned_start >= 0 else "Impossible",
+            "assigned_start_hour": assigned_start,
+            "duration": duration,
         })
 
     return {
         "schedule": schedule,
         "strategy": "Earliest Departure First (EDF)",
-        "vehicles_count": len(request.vehicles)
+        "vehicles_count": len(request.vehicles),
     }
